@@ -5,11 +5,13 @@
       <el-header height="140px">
         <h3>Github Repo URL</h3>
 
-        <div class="repo-right">
-          <el-button style="width: 100%" type="info" @click="startAnalysis" plain><i :class="beginStatusClass"></i>Begin Anlysis</el-button>
+        <div>
+          <div style="width: 48%; float: left;"><el-input autofocus v-model="name" @keyup.enter.native="startAnalysis" :placeholder="defaultName"></el-input></div>
+          <div style="width: 48%; float: right;"><el-input autofocus v-model="repoName" @keyup.enter.native="startAnalysis" :placeholder="defaultRepoName"></el-input></div>
         </div>
-        <div class="repo-left">
-          <el-input autofocus v-model="repoURL" @keyup.enter.native="startAnalysis" :placeholder="defaultURL"></el-input>
+
+        <div class="repo-bottom">
+          <el-button style="width: 100%; margin-top: 10px; margin-bottom: 10px;" type="info" @click="startAnalysis" plain><i :class="beginStatusClass"></i>Begin Anlysis</el-button>
         </div>
 
       </el-header>
@@ -110,8 +112,6 @@
         <el-button @click="setFilePattern">Set</el-button>
       </div>
     </el-dialog>
-
-    <div class="copyright-declare">Powered by <a href="https://qii404.me">qii404.me</a></div>
   </div>
 </template>
 
@@ -121,11 +121,14 @@
   export default {
     data() {
       return {
+        name: '',
+        repoName: '',
         repoURL: '',
         data: [],
         beginStatusClass: '',
-        defaultURL: 'https://github.com/qishibo/AnotherRedisDesktopManager/',
-        chartIndex: 0,
+        defaultName: 'bugprogrammer',
+        defaultRepoName: 'HackintoshBuild',
+        chartIndex: 1,
         pieRoseType: 'radius',
         chartToggles: ['histogram', 'pie', 'pie'],
         legendVisible: false,
@@ -191,15 +194,27 @@
     methods: {
       startAnalysis() {
         this.beginStatusClass = 'el-icon-loading';
-        !this.repoURL && (this.repoURL = this.defaultURL);
+        console.log(!this.repoURL)
+        if(!this.name && this.repoName) {
+          this.name = this.defaultName
+        }
+        if(this.name && !this.repoName) {
+          this.repoName = this.defaultRepoName
+        }
+        if(!this.name && !this.repoName) {
+          this.name = this.defaultName
+          this.repoName = this.defaultRepoName
+        }
+
+        this.repoURL = 'https://github.com/' + this.name + '/' + this.repoName
 
         let url = this.repoURL;
 
-        if (url.substr(0, 4) !== 'http') {
-          url = 'https://' + url;
-        }
+        console.log(this.repoURL)
 
         let info = gh(url);
+
+        console.log(info)
 
         if (!info || !info.owner || !info.name) {
           this.$message.error('URL error!');
@@ -281,19 +296,18 @@
   body a {
     color: #263238;
   }
+
   .container{
     max-width: 900px;
     margin: 10px auto;
   }
   .container .el-header, .container .el-main {
-    padding: 12px;
+    padding: 8px;
+    margin-top: 20px;
   }
-  .repo-right {
-    float: right;
+  .repo-bottom {
     width: 125px;
-  }
-  .repo-left {
-    margin-right: 130px;
+    margin: 0 auto;    
   }
   .common-info-container{
     margin-bottom: 20px;
